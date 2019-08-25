@@ -1,0 +1,46 @@
+{
+  "name": "pdf-view-plus",
+  "main": "./dist/main.js",
+  "version": "1.0.0",
+  "description": "Atom PDF viewer based on PDF.js",
+  "repository": "https://github.com/Aerijo/atom-pdf-view-plus",
+  "license": "MIT",
+  "engines": {
+    "atom": ">=1.40.1 <2.0.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "prepublishOnly": "npm run lint && npm shrinkwrap && git add . && git push && rm -rf ./dist && tsc --declarationMap false --inlineSourceMap false --inlineSources false",
+    "lint": "prettier --check --ignore-path .gitignore **/*",
+    "fix-lint": "prettier --check --write --ignore-path .gitignore **/*",
+    "postversion": "git push --follow-tags"
+  },
+  "dependencies": {},
+  "uriHandler": {
+    "method": "handleURI"
+  },
+  "configSchema": {
+    "fileExtensions": {
+      "type": "array",
+      "default": [
+        "pdf",
+        "ai"
+      ],
+      "title": "PDF file extensions",
+      "description": "Files with these extensions will be opened as PDFs.",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "devDependencies": {
+    "@types/atom": "^1.36.1",
+    "@types/node": "^12.7.2",
+    "prettier": "1.18.2",
+    "tslib": "^1.10.0",
+    "tslint": "^5.18.0",
+    "tslint-config-prettier": "1.18.0",
+    "typescript": "^3.5.3"
+  }
+}
