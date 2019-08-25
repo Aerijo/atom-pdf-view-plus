@@ -8,7 +8,8 @@ export default class PdfEditorView {
   constructor(filePath: string) {
     this.filePath = filePath;
     this.element = document.createElement("div");
-    this.element.innerHTML = `<iframe height="100%" width="100%" src="/home/benjamin/github/atom-pdf-view-plus/vendor/pdfjs/web/viewer.html?file=${filePath}"></iframe>`;
+    const src = path.join(__dirname, "..", "vendor", "pdfjs", "web", "viewer.html");
+    this.element.innerHTML = `<iframe height="100%" width="100%" src="${src}?file=${filePath}"></iframe>`;
   }
 
   getTitle() {

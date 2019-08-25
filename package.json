@@ -18,7 +18,8 @@
   },
   "dependencies": {},
   "uriHandler": {
-    "method": "handleURI"
+    "method": "handleURI",
+    "deferActivation": false
   },
   "configSchema": {
     "fileExtensions": {
