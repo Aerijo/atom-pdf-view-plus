@@ -17,6 +17,6 @@ export default class PdfEditorView {
   }
 
   scrollToPage(page: number) {
-    console.log(`scrolling to ${page}`)
+    console.log(`scrolling to ${page}`);
   }
 }

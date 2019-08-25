@@ -3,22 +3,21 @@ import * as path from "path";
 import * as fs from "fs";
 import PdfEditorView from "./pdf-editor-view";
 
-
 class PdfViewPackage {
   subscriptions: CompositeDisposable;
   pdfExtensions: Set<string>;
 
-  constructor () {
+  constructor() {
     this.subscriptions = new CompositeDisposable();
     this.pdfExtensions = new Set();
   }
 
   activate() {
-    console.log("Activated pdf-view-plus")
+    console.log("Activated pdf-view-plus");
     this.subscriptions.add(
       atom.workspace.addOpener(this.openUri.bind(this)),
-      atom.config.observe('pdf-view-plus.fileExtensions', this.updateFileExtensions.bind(this)),
-    )
+      atom.config.observe("pdf-view-plus.fileExtensions", this.updateFileExtensions.bind(this))
+    );
   }
 
   deserialize({filePath}: any) {
