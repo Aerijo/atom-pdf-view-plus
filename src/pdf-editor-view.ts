@@ -9,7 +9,7 @@ export default class PdfEditorView {
     this.filePath = filePath;
     this.element = document.createElement("div");
     const src = path.join(__dirname, "..", "vendor", "pdfjs", "web", "viewer.html");
-    this.element.innerHTML = `<iframe height="100%" width="100%" src="${src}?file=${filePath}"></iframe>`;
+    this.element.innerHTML = `<iframe height="100%" width="100%" style="border:none;" src="${src}?file=${filePath}"></iframe>`;
   }
 
   getTitle() {
