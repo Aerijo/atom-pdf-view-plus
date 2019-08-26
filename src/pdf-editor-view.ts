@@ -1,5 +1,5 @@
 import * as path from "path";
-import PdfEditor from './pdf-editor';
+import PdfEditor from "./pdf-editor";
 
 export default class PdfEditorView {
   element: any;
@@ -21,11 +21,16 @@ export default class PdfEditorView {
   }
 
   update() {
-    const src = `${path.join(__dirname, "..", "vendor", "pdfjs", "web", "viewer.html")}?file=${encodeURIComponent(this.filePath)}`;
+    const src = `${path.join(
+      __dirname,
+      "..",
+      "vendor",
+      "pdfjs",
+      "web",
+      "viewer.html"
+    )}?file=${encodeURIComponent(this.filePath)}`;
     this.element.setAttribute("src", src);
   }
 
-  destroy() {
-
-  }
+  destroy() {}
 }

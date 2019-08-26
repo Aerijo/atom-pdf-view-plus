@@ -1,6 +1,6 @@
 import {CompositeDisposable} from "atom";
 import * as path from "path";
-import PdfEditor from './pdf-editor';
+import PdfEditor from "./pdf-editor";
 
 class PdfViewPackage {
   subscriptions: CompositeDisposable;
