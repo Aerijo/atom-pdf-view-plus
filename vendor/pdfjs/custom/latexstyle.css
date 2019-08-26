@@ -6,6 +6,11 @@
 
 .annotationLayer .popup {
   box-shadow: none;
+  border-radius: 0px;
+}
+
+.annotationLayer .popup p {
+  font-size: 10px;
 }
 
 .pdfViewer .page {
