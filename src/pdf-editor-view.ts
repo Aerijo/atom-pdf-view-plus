@@ -1,4 +1,3 @@
-// import * as fs from "fs";
 import * as path from "path";
 
 export default class PdfEditorView {
@@ -7,16 +6,18 @@ export default class PdfEditorView {
 
   constructor(filePath: string) {
     this.filePath = filePath;
-    this.element = document.createElement("div");
-    const src = path.join(__dirname, "..", "vendor", "pdfjs", "web", "viewer.html");
-    this.element.innerHTML = `<iframe height="100%" width="100%" style="border:none;" src="${src}?file=${filePath}"></iframe>`;
+
+    this.element = document.createElement("iframe");
+    this.element.setAttribute("id", "pdf-frame");
+    this.element.setAttribute("width", "100%");
+    this.element.setAttribute("height", "100%");
+    this.element.setAttribute("style", "border:none;");
+
+    const src = `${path.join(__dirname, "..", "vendor", "pdfjs", "web", "viewer.html")}?file=${filePath}`;
+    this.element.setAttribute("src", src);
   }
 
   getTitle() {
     return path.basename(this.filePath);
-  }
-
-  scrollToPage(page: number) {
-    console.log(`scrolling to ${page}`);
   }
 }
