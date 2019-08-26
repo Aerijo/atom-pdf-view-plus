@@ -11,7 +11,6 @@ export default class PdfEditorView {
     frame.setAttribute("id", "pdf-frame");
     frame.setAttribute("width", "100%");
     frame.setAttribute("height", "100%");
-    frame.setAttribute("frameborder", "0");
     this.element = frame;
     this.update();
   }
