@@ -17,11 +17,15 @@
     "postversion": "git push --follow-tags"
   },
   "dependencies": {},
-  "uriHandler": {
-    "method": "handleURI",
-    "deferActivation": false
+  "deserializers": {
+    "PdfEditor": "deserialize"
   },
   "configSchema": {
+    "closeViewWhenFileDeleted": {
+      "type": "boolean",
+      "default": false,
+      "description": "Set to true to automatically close the PDF tab when the disk file is deleted"
+    },
     "fileExtensions": {
       "type": "array",
       "default": [
