@@ -12,10 +12,7 @@ export default class PdfEditorView {
     frame.setAttribute("width", "100%");
     frame.setAttribute("height", "100%");
 
-    frame.onload = () => {
-      const cd = frame.contentDocument!;
-      // cd.body.style.backgroundColor="red";
-    };
+    frame.onload = () => {};
 
     this.element = frame;
     this.update();
