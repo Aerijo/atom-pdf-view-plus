@@ -57,6 +57,11 @@
         "sprintf-js": "~1.0.2"
       }
     },
+    "atom-ts-transpiler": {
+      "version": "1.5.2",
+      "resolved": "https://registry.npmjs.org/atom-ts-transpiler/-/atom-ts-transpiler-1.5.2.tgz",
+      "integrity": "sha512-X1Ii+whd+9MuwzV6nXyqpAOq886PH70YcCDDXgFGwkkfMChJndbedBAPUhnp9JqgoktiY0JLkOMmFsdBwuf70g=="
+    },
     "balanced-match": {
       "version": "1.0.0",
       "resolved": "https://registry.npmjs.org/balanced-match/-/balanced-match-1.0.0.tgz",
@@ -325,8 +330,7 @@
     "typescript": {
       "version": "3.5.3",
       "resolved": "https://registry.npmjs.org/typescript/-/typescript-3.5.3.tgz",
-      "integrity": "sha512-ACzBtm/PhXBDId6a6sDJfroT2pOWt/oOnk4/dElG5G33ZL776N3Y6/6bKZJBFpd+b05F3Ct9qDjMeJmRWtE2/g==",
-      "dev": true
+      "integrity": "sha512-ACzBtm/PhXBDId6a6sDJfroT2pOWt/oOnk4/dElG5G33ZL776N3Y6/6bKZJBFpd+b05F3Ct9qDjMeJmRWtE2/g=="
     },
     "wrappy": {
       "version": "1.0.2",
