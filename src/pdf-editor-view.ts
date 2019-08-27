@@ -27,14 +27,7 @@ export default class PdfEditorView {
   }
 
   viewerSrc(): string {
-    return path.join(
-      __dirname,
-      "..",
-      "vendor",
-      "pdfjs",
-      "web",
-      "viewer.html"
-    );
+    return path.join(__dirname, "..", "vendor", "pdfjs", "web", "viewer.html");
   }
 
   rename() {
@@ -45,7 +38,7 @@ export default class PdfEditorView {
   update() {
     if (this.ready) {
       this.element.contentWindow.postMessage({
-        source: this.filePath
+        source: this.filePath,
       });
       // this.element.reloadIgnoringCache();
     } else {
