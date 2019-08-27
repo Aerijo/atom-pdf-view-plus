@@ -35,9 +35,7 @@
       "transpiler": "atom-ts-transpiler",
       "glob": "{!(node_modules)/**/,}*.ts?(x)",
       "options": {
-        "compilerOptions": {},
-        "cacheKeyFiles": [],
-        "verbose": false
+        "verbose": true
       }
     }
   ],
