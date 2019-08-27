@@ -8,7 +8,7 @@ To install, first install `npm` (or `yarn`), and then [apx](https://www.npmjs.co
 ```
 npm install -g @aerijo/apx
 ```
-You will also need to generate a GitHub auth token and store it in the environment variable `GITHUB_AUTH_TOKEN`. Removing this requirement is a work in progress.
+You will also need to generate a GitHub auth token (no permissions required) and store it in the environment variable `GITHUB_AUTH_TOKEN`. Removing this requirement is a work in progress.
 
 then run
 ```
