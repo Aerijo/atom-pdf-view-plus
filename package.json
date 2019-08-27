@@ -1,7 +1,7 @@
 {
   "name": "pdf-view-plus",
   "main": "./dist/main.js",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Atom PDF viewer based on PDF.js",
   "repository": "https://github.com/Aerijo/atom-pdf-view-plus",
   "license": "MIT",
