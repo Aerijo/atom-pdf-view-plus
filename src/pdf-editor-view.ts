@@ -4,6 +4,7 @@ import PdfEditor from "./pdf-editor";
 export default class PdfEditorView {
   element: any;
   editor: PdfEditor;
+  ready: boolean;
 
   constructor(editor: PdfEditor) {
     this.editor = editor;
@@ -12,26 +13,44 @@ export default class PdfEditorView {
     frame.setAttribute("width", "100%");
     frame.setAttribute("height", "100%");
 
-    frame.onload = () => {};
+    this.ready = false;
+    frame.onload = () => {
+      this.ready = true;
+    };
 
     this.element = frame;
-    this.update();
+    this.rename();
   }
 
   get filePath() {
     return this.editor.getPath();
   }
 
-  update() {
-    const src = `${path.join(
+  viewerSrc(): string {
+    return path.join(
       __dirname,
       "..",
       "vendor",
       "pdfjs",
       "web",
       "viewer.html"
-    )}?file=${encodeURIComponent(this.filePath)}`;
+    );
+  }
+
+  rename() {
+    const src = `${this.viewerSrc()}?file=${encodeURIComponent(this.filePath)}`;
     this.element.setAttribute("src", src);
+  }
+
+  update() {
+    if (this.ready) {
+      this.element.contentWindow.postMessage({
+        source: this.filePath
+      });
+      // this.element.reloadIgnoringCache();
+    } else {
+      this.rename();
+    }
   }
 
   destroy() {}
