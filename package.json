@@ -23,10 +23,6 @@
     "fix-lint": "prettier --check --write --ignore-path .gitignore **/*",
     "postversion": "git push --follow-tags"
   },
-  "dependencies": {
-    "atom-ts-transpiler": "^1.5.2",
-    "typescript": "^3.5.3"
-  },
   "deserializers": {
     "PdfEditor": "deserialize"
   },
