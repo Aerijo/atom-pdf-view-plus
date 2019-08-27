@@ -8,6 +8,11 @@
   "engines": {
     "atom": ">=1.40.1 <2.0.0"
   },
+  "files": [
+    "/dist",
+    "/vendor",
+    "/styles"
+  ],
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
