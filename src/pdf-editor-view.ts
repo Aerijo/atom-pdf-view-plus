@@ -10,8 +10,6 @@ export default class PdfEditorView {
     this.editor = editor;
     const frame = document.createElement("iframe");
     frame.setAttribute("id", "pdf-frame");
-    frame.setAttribute("width", "100%");
-    frame.setAttribute("height", "100%");
 
     this.ready = false;
     frame.onload = () => {
@@ -19,10 +17,10 @@ export default class PdfEditorView {
     };
 
     this.element = frame;
-    this.rename();
+    this.setFile(this.filepath);
   }
 
-  get filePath() {
+  get filepath() {
     return this.editor.getPath();
   }
 
@@ -30,21 +28,24 @@ export default class PdfEditorView {
     return path.join(__dirname, "..", "vendor", "pdfjs", "web", "viewer.html");
   }
 
-  rename() {
-    const src = `${this.viewerSrc()}?file=${encodeURIComponent(this.filePath)}`;
+  setFile(filepath: string) {
+    const src = `${this.viewerSrc()}?file=${encodeURIComponent(filepath)}`;
     this.element.setAttribute("src", src);
   }
 
   update() {
     if (this.ready) {
       this.element.contentWindow.postMessage({
-        source: this.filePath,
+        type: "refresh",
+        source: this.filepath,
       });
       // this.element.reloadIgnoringCache();
     } else {
-      this.rename();
+      this.setFile(this.filepath);
     }
   }
 
-  destroy() {}
+  destroy() {
+
+  }
 }

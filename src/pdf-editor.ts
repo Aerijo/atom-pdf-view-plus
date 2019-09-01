@@ -15,25 +15,13 @@ export default class PdfEditor {
   }
 
   file: File;
+  view: PdfEditorView;
   subscriptions: CompositeDisposable;
-  pdfView?: PdfEditorView;
 
   constructor(filePath: string) {
     this.file = new File(filePath);
     this.subscriptions = new CompositeDisposable();
-    this.subscriptions.add(
-      this.file.onDidDelete(() => {
-        if (atom.config.get("pdf-view-plus.closeViewWhenFileDeleted")) {
-          try {
-            const pane = atom.workspace.paneForURI(filePath)!;
-            pane.destroyItem(pane.itemForURI(filePath)!);
-          } catch (e) {
-            console.warn(`Could not destroy pane after external file was deleted: ${e}`);
-          }
-          this.subscriptions.dispose();
-        }
-      })
-    );
+    this.view = new PdfEditorView(this);
 
     let timerID: any;
     const debounced = (callback: Function) => {
@@ -42,23 +30,28 @@ export default class PdfEditor {
     };
 
     this.subscriptions.add(
+      this.file.onDidRename(() => {
+
+      }),
       this.file.onDidChange(() => {
         debounced(() => {
           this.view.update();
         });
+      }),
+      this.file.onDidDelete(() => {
+        if (atom.config.get("pdf-view-plus.closeViewWhenFileDeleted")) {
+          try {
+            this.destroy();
+          } catch (e) {
+            console.warn(`Could not destroy pane after external file was deleted: ${e}`);
+          }
+        }
       })
     );
   }
 
   get element() {
     return this.view.element;
-  }
-
-  get view() {
-    if (!this.pdfView) {
-      this.pdfView = new PdfEditorView(this);
-    }
-    return this.pdfView;
   }
 
   serialize() {
@@ -86,11 +79,7 @@ export default class PdfEditor {
 
   getTitle() {
     const filePath = this.getPath();
-    if (filePath) {
-      return path.basename(filePath);
-    } else {
-      return "untitled";
-    }
+    return filePath ? path.basename(filePath) : "untitled";
   }
 
   isEqual(other: any) {
