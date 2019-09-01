@@ -1,13 +1,11 @@
-// console.log(this)
-this.onclick = (e) => {
-  // console.log("clicked", e)
-  // PDFViewerApplication.pdfDocument.getPage(1).then(page => {
-  //   console.log(page.getViewport())
-  // })
-}
+PDFViewerApplicationOptions.set("sidebarViewOnLoad", 0);
+PDFViewerApplicationOptions.set("enableWebGL", true);
+PDFViewerApplicationOptions.set("externalLinkTarget", 4);
+PDFViewerApplicationOptions.set("eventBusDispatchToDOM", true);
 
-window.addEventListener("message", message => {
-  if (message.data.source) {
+window.addEventListener("message", event => {
+  const data = event.data;
+  if (data.source) {
     PDFViewerApplication.open(message.data.source);
   }
 });
