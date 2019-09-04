@@ -1,6 +1,6 @@
 {
   "name": "pdf-view-plus",
-  "main": "./dist/main.js",
+  "main": "./src/main.ts",
   "version": "1.0.7",
   "description": "Atom PDF viewer based on PDF.js",
   "repository": "https://github.com/Aerijo/atom-pdf-view-plus",
@@ -61,6 +61,10 @@
     "tslib": "^1.10.0",
     "tslint": "^5.18.0",
     "tslint-config-prettier": "1.18.0",
+    "typescript": "^3.5.3"
+  },
+  "dependencies": {
+    "atom-ts-transpiler": "1.5.2",
     "typescript": "^3.5.3"
   }
 }

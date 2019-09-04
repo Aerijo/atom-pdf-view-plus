@@ -2,6 +2,9 @@
 
 const {spawnSync, shrinkwrap, uploadGit} = require("./utils");
 
+const fs = require("fs");
+const path = require("path");
+
 function uploadGitTag() {
   console.log("Committing git tag...");
   spawnSync("git", ["push", "--follow-tags"]);
