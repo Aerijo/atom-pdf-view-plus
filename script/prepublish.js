@@ -3,23 +3,27 @@
 
 const cp = require("child_process");
 
+function spawnSync(cmd, args) {
+  return cp.spawnSync(cmd, args, {stdio: "inherit"});
+}
+
 function lint(fix = true) {
-  cp.spawnSync("npm", ["run", fix ? "fix-lint" : "lint"], {stdio: "inherit"});
+  spawnSync("npm", ["run", fix ? "fix-lint" : "lint"]);
 }
 
 function shrinkwrap() {
-  cp.spawnSync("npm", ["shrinkwrap"]);
+  spawnSync("npm", ["shrinkwrap"]);
 }
 
 function uploadGit() {
-  cp.spawnSync("git", ["add", "."]);
-  cp.spawnSync("git", ["commit", "-m", "prepare for publish"]);
-  cp.spawnSync("git", ["push"]);
+  spawnSync("git", ["add", "."]);
+  spawnSync("git", ["commit", "-m", "prepare for publish"]);
+  spawnSync("git", ["push"]);
 }
 
 function recompileSource() {
-  cp.spawnSync("rm", ["-rf", "./dist"]);
-  cp.spawnSync("tsc", [
+  spawnSync("rm", ["-rf", "./dist"]);
+  spawnSync("tsc", [
     "--declarationMap",
     "false",
     "--inlineSourceMap",
