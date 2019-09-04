@@ -1,20 +1,12 @@
-// npm run lint && npm shrinkwrap && git add . && git push && rm -rf ./dist && tsc --declarationMap false --inlineSourceMap false --inlineSources false
-//
+// Edits the repo to make a source consistent with how apm install will work.
+// The package.json changes are reverted in postversion, which is before
+// apx starts making the bundle.
 
-const cp = require("child_process");
-
-function spawnSync(cmd, args) {
-  return cp.spawnSync(cmd, args, {stdio: "inherit"});
-}
+const {spawnSync, shrinkwrap} = require("./utils");
 
 function lint(fix = true) {
   console.log("Fixing lint issues...");
   spawnSync("npm", ["run", fix ? "fix-lint" : "lint"]);
-}
-
-function shrinkwrap() {
-  console.log("Making shrinkwrap...");
-  spawnSync("npm", ["shrinkwrap"]);
 }
 
 function uploadGit() {
@@ -37,8 +29,14 @@ function recompileSource() {
   ]);
 }
 
+function alterPackageJson() {
+  const pj = require("../package.json");
+  console.log("pj");
+}
+
 function main() {
   lint();
+  alterPackageJson();
   shrinkwrap();
   uploadGit();
   recompileSource();

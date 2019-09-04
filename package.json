@@ -18,10 +18,10 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
-    "prepublishOnly": "node script/prepublish.js",
     "lint": "prettier --check --ignore-path .gitignore **/*",
     "fix-lint": "prettier --check --write --ignore-path .gitignore **/*",
-    "postversion": "git push --follow-tags"
+    "preversion": "node script/preversion.js",
+    "postversion": "node script/postversion.js"
   },
   "deserializers": {
     "PdfEditor": "deserialize"
