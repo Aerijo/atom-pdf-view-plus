@@ -31,7 +31,7 @@ function recompileSource() {
 
 function alterPackageJson() {
   const pj = require("../package.json");
-  console.log("pj");
+  console.log(pj);
 }
 
 function main() {
