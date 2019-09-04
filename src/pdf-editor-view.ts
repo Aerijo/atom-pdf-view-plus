@@ -39,13 +39,14 @@ export default class PdfEditorView {
         type: "refresh",
         source: this.filepath,
       });
-      // this.element.reloadIgnoringCache();
     } else {
       this.setFile(this.filepath);
     }
   }
 
   destroy() {
-
+    this.element = undefined;
+    this.editor = undefined!;
+    console.log("destroyed view");
   }
 }

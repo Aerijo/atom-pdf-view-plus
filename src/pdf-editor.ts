@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import {File, CompositeDisposable} from "atom";
+import {File, Disposable, CompositeDisposable} from "atom";
 import PdfEditorView from "./pdf-editor-view";
 
 export default class PdfEditor {
@@ -17,13 +17,14 @@ export default class PdfEditor {
   file: File;
   view: PdfEditorView;
   subscriptions: CompositeDisposable;
+  onDidChangeTitleCallback?: Function;
 
   constructor(filePath: string) {
     this.file = new File(filePath);
     this.subscriptions = new CompositeDisposable();
     this.view = new PdfEditorView(this);
 
-    let timerID: any;
+    let timerID: number;
     const debounced = (callback: Function) => {
       clearTimeout(timerID);
       timerID = setTimeout(callback, 200);
@@ -31,7 +32,9 @@ export default class PdfEditor {
 
     this.subscriptions.add(
       this.file.onDidRename(() => {
-
+        if (this.onDidChangeTitleCallback) {
+          this.onDidChangeTitleCallback();
+        }
       }),
       this.file.onDidChange(() => {
         debounced(() => {
@@ -65,6 +68,7 @@ export default class PdfEditor {
     this.subscriptions.dispose();
     if (this.view) {
       this.view.destroy();
+      this.view = undefined!;
     }
   }
 
@@ -80,6 +84,11 @@ export default class PdfEditor {
   getTitle() {
     const filePath = this.getPath();
     return filePath ? path.basename(filePath) : "untitled";
+  }
+
+  onDidChangeTitle(cb: Function) {
+    this.onDidChangeTitleCallback = cb;
+    return new Disposable();
   }
 
   isEqual(other: any) {

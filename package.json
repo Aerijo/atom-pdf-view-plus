@@ -18,7 +18,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
-    "prepublishOnly": "npm run lint && npm shrinkwrap && git add . && git push && rm -rf ./dist && tsc --declarationMap false --inlineSourceMap false --inlineSources false",
+    "prepublishOnly": "node script/prepublish.js",
     "lint": "prettier --check --ignore-path .gitignore **/*",
     "fix-lint": "prettier --check --write --ignore-path .gitignore **/*",
     "postversion": "git push --follow-tags"

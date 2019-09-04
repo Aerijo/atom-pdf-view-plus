@@ -1,3 +1,5 @@
+console.log(this)
+
 PDFViewerApplicationOptions.set("sidebarViewOnLoad", 0);
 PDFViewerApplicationOptions.set("enableWebGL", true);
 PDFViewerApplicationOptions.set("externalLinkTarget", 4);
