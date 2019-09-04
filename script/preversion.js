@@ -2,18 +2,13 @@
 // The package.json changes are reverted in postversion, which is before
 // apx starts making the bundle.
 
-const {spawnSync, shrinkwrap} = require("./utils");
+const {spawnSync, shrinkwrap, uploadGit} = require("./utils");
+const fs = require("fs");
+const path = require("path");
 
 function lint(fix = true) {
   console.log("Fixing lint issues...");
   spawnSync("npm", ["run", fix ? "fix-lint" : "lint"]);
-}
-
-function uploadGit() {
-  console.log("Committing all changes...");
-  spawnSync("git", ["add", "."]);
-  spawnSync("git", ["commit", "-m", "prepare for publish"]);
-  spawnSync("git", ["push"]);
 }
 
 function recompileSource() {
@@ -30,16 +25,34 @@ function recompileSource() {
 }
 
 function alterPackageJson() {
+  console.log("Altering package.json...");
   const pj = require("../package.json");
-  console.log(pj);
+  fs.renameSync(
+    path.resolve(__dirname, "../package.json"),
+    path.resolve(__dirname, "../package.original.json")
+  );
+  if (!pj.dependencies) {
+    pj.dependencies = {};
+  }
+  pj.dependencies["atom-ts-transpiler"] = "1.5.2";
+  pj.dependencies["typescript"] = pj.devDependencies["typescript"];
+  pj.main = "./src/main.ts";
+  fs.writeFileSync(path.resolve(__dirname, "../package.json"), JSON.stringify(pj, null, 2));
+}
+
+function runtests() {
+  // TODO
+  console.log("Running tests...");
+  return;
 }
 
 function main() {
   lint();
+  recompileSource();
+  runtests();
   alterPackageJson();
   shrinkwrap();
   uploadGit();
-  recompileSource();
 }
 
 main();

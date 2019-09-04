@@ -9,4 +9,11 @@ function shrinkwrap() {
   spawnSync("npm", ["shrinkwrap"]);
 }
 
-module.exports = {spawnSync, shrinkwrap};
+function uploadGit() {
+  console.log("Committing all changes...");
+  spawnSync("git", ["add", "."]);
+  spawnSync("git", ["commit", "-m", "prepare for publish"]);
+  spawnSync("git", ["push"]);
+}
+
+module.exports = {spawnSync, shrinkwrap, uploadGit};
