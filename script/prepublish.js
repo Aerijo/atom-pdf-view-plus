@@ -8,20 +8,24 @@ function spawnSync(cmd, args) {
 }
 
 function lint(fix = true) {
+  console.log("Fixing lint issues...");
   spawnSync("npm", ["run", fix ? "fix-lint" : "lint"]);
 }
 
 function shrinkwrap() {
+  console.log("Making shrinkwrap...");
   spawnSync("npm", ["shrinkwrap"]);
 }
 
 function uploadGit() {
+  console.log("Committing all changes...");
   spawnSync("git", ["add", "."]);
   spawnSync("git", ["commit", "-m", "prepare for publish"]);
   spawnSync("git", ["push"]);
 }
 
 function recompileSource() {
+  console.log("Recompiling source...");
   spawnSync("rm", ["-rf", "./dist"]);
   spawnSync("tsc", [
     "--declarationMap",
