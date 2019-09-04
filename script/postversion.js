@@ -16,7 +16,7 @@ function revertPackageJson() {
     path.resolve(__dirname, "../package.original.json"),
     path.resolve(__dirname, "../package.json")
   );
-  fs.unlink(path.resolve(__dirname, "../package.original.json"));
+  fs.unlinkSync(path.resolve(__dirname, "../package.original.json"));
 }
 
 function main() {
