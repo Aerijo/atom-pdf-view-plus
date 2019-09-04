@@ -53,18 +53,5 @@
     "tslint": "^5.18.0",
     "tslint-config-prettier": "1.18.0",
     "typescript": "^3.5.3"
-  },
-  "dependencies": {
-    "atom-ts-transpiler": "1.5.2",
-    "typescript": "^3.5.3"
-  },
-  "atomTranspilers": [
-    {
-      "transpiler": "atom-ts-transpiler",
-      "glob": "{!(node_modules)/**/,}*.ts?(x)",
-      "options": {
-        "verbose": true
-      }
-    }
-  ]
+  }
 }

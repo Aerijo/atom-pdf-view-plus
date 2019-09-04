@@ -36,6 +36,17 @@ function alterPackageJson() {
   }
   pj.dependencies["atom-ts-transpiler"] = "1.5.2";
   pj.dependencies["typescript"] = pj.devDependencies["typescript"];
+
+  pj.atomTranspilers = [
+    {
+      transpiler: "atom-ts-transpiler",
+      glob: "{!(node_modules)/**/,}*.ts?(x)",
+      options: {
+        verbose: true,
+      },
+    },
+  ];
+
   pj.main = "./src/main.ts";
   fs.writeFileSync(path.resolve(__dirname, "../package.json"), JSON.stringify(pj, null, 2));
 }
