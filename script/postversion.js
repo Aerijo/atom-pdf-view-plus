@@ -15,7 +15,7 @@ function revertPackageJson() {
   const pj = require("../package.json");
   const pjo = require("../package.original.json");
   pjo.version = pj.version;
-  fs.writeFileSync(path.resolve(__dirname, "../package.json"), JSON.stringify(pjo, null, 2));
+  fs.writeFileSync(path.resolve(__dirname, "../package.json"), JSON.stringify(pjo, null, 2) + "\n");
   fs.unlinkSync(path.resolve(__dirname, "../package.original.json"));
 }
 
