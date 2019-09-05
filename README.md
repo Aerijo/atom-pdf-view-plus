@@ -1,15 +1,14 @@
 # pdf-view-plus
 
-This package provides a PDF viewer for Atom. It is intended to completely replace [`pdf-view`](https://atom.io/packages/pdf-view).
+This package provides a PDF viewer for Atom. It is intended to replace [`pdf-view`](https://atom.io/packages/pdf-view). It is still a work in progress; some features, such as synctex and remembering view state have not been implemented yet.
+
 
 ## Installing
 
-To install, first install `npm` (or `yarn`), and then [apx](https://www.npmjs.com/package/@aerijo/apx) with the following command
+To install, first install `npm`, and then [apx](https://www.npmjs.com/package/@aerijo/apx) with the following command
 ```
 npm install -g @aerijo/apx
 ```
-You will also need to generate a GitHub auth token (no permissions required) and store it in the environment variable `GITHUB_AUTH_TOKEN`. Removing this requirement is a work in progress.
-
 then run
 ```
 apx install pdf-view-plus
@@ -18,7 +17,7 @@ apx install pdf-view-plus
 
 ### ...why?
 
-This package is written in TypeScript. It first needs to be translated to JavaScript, but `apm` does not support installing from a published asset, and will only install the source files. The built in transpiler is old and [being removed](https://github.com/atom/atom/issues/17001). The best alternative would be [`atom-ts-transpiler`](https://github.com/smhxx/atom-ts-transpiler), but that would make the package size over 5 times bigger (7MB to 41MB) for a one time convenience, to fix a problem that doesn't need to exist in the first place.
+This package is written in TypeScript. It first needs to be translated to JavaScript, but `apm` will only install the source files. In the interest of making this package accessible, the releases have been configured to work with both `apx` and `apm`. However, the `apm` install is 70MB, while installing via `apx` is only 7MB.
 
 
 ## Developing
