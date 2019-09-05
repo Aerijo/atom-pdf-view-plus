@@ -63,7 +63,7 @@ function main() {
   runtests();
   alterPackageJson();
   shrinkwrap();
-  uploadGit();
+  uploadGit("Convert to apm compatible release state");
 }
 
 main();

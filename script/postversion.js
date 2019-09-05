@@ -17,13 +17,14 @@ function revertPackageJson() {
   pjo.version = pj.version;
   fs.writeFileSync(path.resolve(__dirname, "../package.json"), JSON.stringify(pjo, null, 2) + "\n");
   fs.unlinkSync(path.resolve(__dirname, "../package.original.json"));
+  fs.unlinkSync(path.resolve(__dirname, "../npm-shrinkwrap.json"));
 }
 
 function main() {
   uploadGitTag();
   revertPackageJson();
   shrinkwrap();
-  uploadGit();
+  uploadGit("Revert to dev state");
 }
 
 main();

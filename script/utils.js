@@ -9,10 +9,10 @@ function shrinkwrap() {
   spawnSync("npm", ["shrinkwrap"]);
 }
 
-function uploadGit() {
+function uploadGit(msg) {
   console.log("Committing all changes...");
   spawnSync("git", ["add", "."]);
-  spawnSync("git", ["commit", "-m", "prepare for publish"]);
+  spawnSync("git", ["commit", "-m", msg || "prepare for publish"]);
   spawnSync("git", ["push"]);
 }
 
