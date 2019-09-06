@@ -1,7 +1,5 @@
 #pdf-frame {
   border: none;
-  padding-left: 1px;
-  /* padding-right: 3px; */
   height: 100%;
   width: 100%;
 }

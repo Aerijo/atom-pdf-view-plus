@@ -1,3 +1,12 @@
+body {
+  background-color: inherit;
+  background-image: none;
+}
+
+#sidebarContent {
+  background-color: hsla(0,0%,0%,.7);
+}
+
 .annotationLayer .linkAnnotation > a:hover,
 .annotationLayer .buttonWidgetAnnotation.pushButton > a:hover {
   background: #00ffff;
@@ -15,17 +24,18 @@
 
 .pdfViewer .page {
   -o-border-image: none;
-     border-image: none;
-  background-color: grey;
+  border-image: none;
+  background-color: inherit;
 }
 
-body {
-  background-color: #21252b;
-  background-image: none;
+.pdfViewer .page:not([data-loaded]) {
+  box-sizing: border-box;
+  border-width: 1px;
+  border-color: grey;
 }
 
 ::-webkit-scrollbar {
-    width: 1em;
+  width: 1em;
 }
 
 ::-webkit-scrollbar-track {

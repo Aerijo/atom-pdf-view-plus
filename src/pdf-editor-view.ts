@@ -30,6 +30,7 @@ export default class PdfEditorView {
 
   setFile(filepath: string) {
     const src = `${this.viewerSrc()}?file=${encodeURIComponent(filepath)}`;
+    this.ready = false;
     this.element.setAttribute("src", src);
   }
 
