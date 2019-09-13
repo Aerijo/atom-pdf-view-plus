@@ -48,19 +48,14 @@ function restoreFromParams({scale, scrollTop, scrollLeft}) {
 
 document.addEventListener("pagerendered", (evt) => {
   const page = evt.detail.pageNumber - 1;
-  const canvasDom = PDFViewerApplication.pdfViewer.getPageView(page).div;
-  canvasDom.onclick = (e) => {
-    const viewerContainer = PDFViewerApplication.pdfViewer.spreadMode === 0
-      ? canvasDom.parentNode.parentNode
-      : viewerContainer = canvasDom.parentNode.parentNode.parentNode;
-    const left = e.pageX - canvasDom.offsetLeft + viewerContainer.scrollLeft;
-    const top = e.pageY - canvasDom.offsetTop + viewerContainer.scrollTop - 41;
-    const pos = PDFViewerApplication.pdfViewer._pages[page].getPagePoint(left, canvasDom.offsetHeight - top);
-    parent.postMessage({type: "click", position: pos, page: page});
+  const pageView = PDFViewerApplication.pdfViewer.getPageView(page);
+  pageView.div.onclick = (e) => {
+    const [x, y] = pageView.viewport.convertToPdfPoint(e.offsetX, e.offsetY);
+    if (x < 0 || y < 0) { return; }
+    parent.postMessage({type: "click", position: {x, y}, page: page});
   };
 }, {capture: true, passive: true});
 
-// Open links externally identified by target set from PDFJS.LinkTarget.TOP
 document.addEventListener("click", (evt) => {
   const srcElement = evt.srcElement;
   if (srcElement.href !== undefined && srcElement.target === "_top") {
