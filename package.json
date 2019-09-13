@@ -47,6 +47,7 @@
   },
   "devDependencies": {
     "@types/atom": "^1.36.1",
+    "@types/electron": "^1.6.10",
     "@types/node": "^12.7.2",
     "prettier": "1.18.2",
     "tslib": "^1.10.0",

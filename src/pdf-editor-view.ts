@@ -1,6 +1,12 @@
 import * as path from "path";
 import PdfEditor from "./pdf-editor";
 
+interface Message {
+  origin: string,
+  data: any,
+  source: any,
+}
+
 export default class PdfEditorView {
   element: any;
   editor: PdfEditor;
@@ -9,6 +15,8 @@ export default class PdfEditorView {
   constructor(editor: PdfEditor) {
     this.editor = editor;
     const frame = document.createElement("iframe");
+    this.element = frame;
+
     frame.setAttribute("id", "pdf-frame");
 
     this.ready = false;
@@ -16,8 +24,32 @@ export default class PdfEditorView {
       this.ready = true;
     };
 
-    this.element = frame;
+    window.addEventListener("message", evt => {this.handleMessage(evt as any)});
+
     this.setFile(this.filepath);
+  }
+
+  handleMessage(msg: Message) {
+    if (this.element.contentWindow !== msg.source) { return; }
+    const type: string = msg.data.type;
+    switch (type) {
+      case "link":
+        this.handleLink(msg.data.href);
+        return;
+      case "click":
+        this.handleClick(msg.data);
+        return;
+      default:
+        throw new Error(`Unexpected message type ${type} from iframe`);
+    }
+  }
+
+  async handleLink(link: string) {
+    (await import("electron")).shell.openExternal(link);
+  }
+
+  handleClick(data: any) {
+    console.log(data);
   }
 
   get filepath() {
@@ -45,9 +77,5 @@ export default class PdfEditorView {
     }
   }
 
-  destroy() {
-    this.element = undefined;
-    this.editor = undefined!;
-    console.log("destroyed view");
-  }
+  destroy() {}
 }
