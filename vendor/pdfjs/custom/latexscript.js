@@ -16,6 +16,26 @@ window.addEventListener("message", event => {
   }
 });
 
-function refreshContents(filepath) {
+async function refreshContents(filepath) {
+  const params = getDocumentParams();
   PDFViewerApplication.open(filepath);
+  document.addEventListener("pagesinit", () => {
+    restoreFromParams(params);
+  }, {once: true, passive: true});
+}
+
+function getDocumentParams() {
+  const container = document.getElementById('viewerContainer');
+  return {
+    scale: PDFViewerApplication.pdfViewer.currentScaleValue,
+    scrollTop: container.scrollTop,
+    scrollLeft: container.scrollLeft,
+  }
+}
+
+function restoreFromParams({scale, scrollTop, scrollLeft}) {
+  const container = document.getElementById('viewerContainer');
+  PDFViewerApplication.pdfViewer.currentScaleValue = scale;
+  container.scrollTop = scrollTop;
+  container.scrollLeft = scrollLeft;
 }
