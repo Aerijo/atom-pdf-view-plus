@@ -7,13 +7,17 @@ window.onload = () => {
   PDFViewerApplicationOptions.set("externalLinkTarget", 4);
   PDFViewerApplicationOptions.set("eventBusDispatchToDOM", true);
   PDFViewerApplicationOptions.set("renderInteractiveForms", false); // TODO: Can these be saved?
+  PDFViewerApplicationOptions.set("isEvalSupported", false);
 }
 
 window.addEventListener("message", event => {
   const data = event.data;
   switch (data.type) {
     case "refresh":
-      refreshContents(data.source);
+      refreshContents(data.filepath);
+      return;
+    case "synctex":
+      handleSynctex(data);
       return;
     default:
       throw new Error(`Unexpected message type ${data.type} received`);
@@ -21,6 +25,9 @@ window.addEventListener("message", event => {
 });
 
 async function refreshContents(filepath) {
+  if (typeof filepath !== "string") {
+    throw new Error(`Expected string as filepath, got ${filepath}`);
+  }
   const params = getDocumentParams();
   PDFViewerApplication.open(filepath);
   document.addEventListener(
@@ -46,17 +53,41 @@ function restoreFromParams({scale, scrollTop, scrollLeft}) {
   container.scrollLeft = scrollLeft;
 }
 
-document.addEventListener("pagerendered", (evt) => {
+function handleSynctex({page, x: pdfX, y: pdfY}) {
+  if (typeof page !== "number") {
+    throw new Error("Expected page number");
+  }
+
+  const clientHeight = PDFViewerApplication.appConfig.mainContainer.clientHeight;
+  const clientWidth = PDFViewerApplication.appConfig.mainContainer.clientWidth;
+
+  const pageView = PDFViewerApplication.pdfViewer.getPageView(page);
+  const [x, y] = pageView.viewport.convertToViewportPoint(pdfX, pdfY);
+  const height = pageView.div.offsetTop;
+
+  const percentDown = 0.50;
+  const percentAcross = 0.50;
+
+  PDFViewerApplication.pdfViewer.container.scrollTo({
+    top: height + y - clientHeight * percentDown,
+    left: x - clientWidth * percentAcross,
+  });
+}
+
+document.addEventListener("pagerendered", evt => {
   const page = evt.detail.pageNumber - 1;
   const pageView = PDFViewerApplication.pdfViewer.getPageView(page);
-  pageView.div.onclick = (e) => {
-    const [x, y] = pageView.viewport.convertToPdfPoint(e.offsetX, e.offsetY);
-    if (x < 0 || y < 0) { return; }
+  pageView.div.onclick = e => {
+    console.log(e);
+    const rect = pageView.div.getBoundingClientRect();
+    const relX = e.clientX - rect.left;
+    const relY = e.clientY - rect.top;
+    const [x, y] = pageView.viewport.convertToPdfPoint(relX, relY);
     parent.postMessage({type: "click", position: {x, y}, page: page});
   };
 }, {capture: true, passive: true});
 
-document.addEventListener("click", (evt) => {
+document.addEventListener("click", evt => {
   const srcElement = evt.srcElement;
   if (srcElement.href !== undefined && srcElement.target === "_top") {
     evt.preventDefault();

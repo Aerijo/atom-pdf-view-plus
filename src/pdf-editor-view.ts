@@ -48,8 +48,17 @@ export default class PdfEditorView {
     (await import("electron")).shell.openExternal(link);
   }
 
-  handleClick(data: any) {
-    console.log(data);
+  handleClick({position, page}: any) {
+    const {x, y} = position;
+
+    setTimeout(() => {
+      this.element.contentWindow.postMessage({
+        type: "synctex",
+        page: (page as number),
+        x,
+        y,
+      });
+    }, 0);
   }
 
   get filepath() {
@@ -70,7 +79,7 @@ export default class PdfEditorView {
     if (this.ready) {
       this.element.contentWindow.postMessage({
         type: "refresh",
-        source: this.filepath,
+        filepath: this.filepath,
       });
     } else {
       this.setFile(this.filepath);
