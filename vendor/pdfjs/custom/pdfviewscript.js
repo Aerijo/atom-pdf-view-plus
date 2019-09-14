@@ -34,6 +34,11 @@ async function refreshContents(filepath) {
     throw new Error(`Expected string as filepath, got ${filepath}`);
   }
   // TODO: Only refresh when `display: none` is false (otherwise get rendering error)
+  if (PDFViewerApplication.appConfig.mainContainer.offsetParent === null) {
+    // we are not in view;
+    console.log("Not in view");
+    return;
+  }
   const params = getDocumentParams();
   PDFViewerApplication.open(filepath);
   document.addEventListener(
