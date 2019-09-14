@@ -1,6 +1,8 @@
 // Hides "basic debug information" and other cruft logged by PDFjs
 // console.log = () => {}
 
+(function(){
+
 window.onload = () => {
   PDFViewerApplicationOptions.set("sidebarViewOnLoad", 0);
   PDFViewerApplicationOptions.set("enableWebGL", true);
@@ -29,16 +31,35 @@ window.addEventListener("message", event => {
   }
 });
 
+const styleObserver = new MutationObserver(handleChangedStyle);
+let lastFilepath = undefined;
+
+function handleChangedStyle(_mutationList, observer) {
+  if (window.frameElement.style.display === "") {
+    observer.disconnect();
+    if (lastFilepath !== undefined) {
+      const filepath = lastFilepath;
+      lastFilepath = undefined;
+      refreshContents(filepath);
+    }
+  }
+}
+
 async function refreshContents(filepath) {
   if (typeof filepath !== "string") {
     throw new Error(`Expected string as filepath, got ${filepath}`);
   }
-  // TODO: Only refresh when `display: none` is false (otherwise get rendering error)
-  if (PDFViewerApplication.appConfig.mainContainer.offsetParent === null) {
-    // we are not in view;
-    console.log("Not in view");
+
+  if (window.frameElement.style.display === "none") {
+    // we are not in view; don't bother updating
+    lastFilepath = filepath;
+    styleObserver.observe(window.frameElement, {
+      attributes: true,
+      attributeFilter: ["style"],
+    });
     return;
   }
+
   const params = getDocumentParams();
   PDFViewerApplication.open(filepath);
   document.addEventListener(
@@ -125,3 +146,6 @@ document.addEventListener("click", evt => {
     sendMessage("link", {href: srcElement.href});
   }
 });
+
+
+})();
