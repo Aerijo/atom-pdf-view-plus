@@ -22,12 +22,13 @@ export class PdfEditor {
   file: File;
   view: PdfEditorView;
   subscriptions: CompositeDisposable;
-  onDidChangeTitleCallback?: Function;
+  onDidChangeTitleCallbacks: Set<Function>;
 
   constructor(filePath: string) {
     this.file = new File(filePath);
     this.subscriptions = new CompositeDisposable();
     this.view = new PdfEditorView(this);
+    this.onDidChangeTitleCallbacks = new Set();
 
     let timerID: number;
     const debounced = (callback: Function) => {
@@ -37,9 +38,7 @@ export class PdfEditor {
 
     this.subscriptions.add(
       this.file.onDidRename(() => { // Doesn't seem to work (on Linux at least)
-        if (this.onDidChangeTitleCallback) {
-          this.onDidChangeTitleCallback();
-        }
+        this.updateTitle();
       }),
       this.file.onDidChange(() => {
         debounced(() => {
@@ -96,9 +95,15 @@ export class PdfEditor {
     return filePath ? path.basename(filePath) : "untitled";
   }
 
+  updateTitle() {
+    this.onDidChangeTitleCallbacks.forEach(cb => cb());
+  }
+
   onDidChangeTitle(cb: Function) {
-    this.onDidChangeTitleCallback = cb;
-    return new Disposable();
+    this.onDidChangeTitleCallbacks.add(cb);
+    return new Disposable(() => {
+      this.onDidChangeTitleCallbacks.delete(cb);
+    });
   }
 
   isEqual(other: any) {
