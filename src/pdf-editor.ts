@@ -5,7 +5,12 @@ import {PdfEditorView, PdfClick, PdfPosition} from "./pdf-editor-view";
 
 export class PdfEditor {
   static deserialize({filePath}: any) {
-    if (fs.statSync(filePath).isFile()) {
+    let isFile = false;
+    try {
+      isFile = fs.statSync(filePath).isFile();
+    } catch (e) {}
+
+    if (isFile) {
       return new PdfEditor(filePath);
     } else {
       console.warn(
@@ -31,7 +36,7 @@ export class PdfEditor {
     };
 
     this.subscriptions.add(
-      this.file.onDidRename(() => {
+      this.file.onDidRename(() => { // Doesn't seem to work (on Linux at least)
         if (this.onDidChangeTitleCallback) {
           this.onDidChangeTitleCallback();
         }
@@ -66,9 +71,10 @@ export class PdfEditor {
 
   destroy() {
     this.subscriptions.dispose();
-    if (this.view) {
-      this.view.destroy();
-      this.view = undefined!;
+    this.view.destroy();
+    const pane = atom.workspace.paneForItem(this);
+    if (pane) {
+      pane.destroyItem(this);
     }
   }
 
