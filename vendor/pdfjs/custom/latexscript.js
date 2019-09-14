@@ -10,17 +10,22 @@ window.onload = () => {
   PDFViewerApplicationOptions.set("isEvalSupported", false);
 }
 
+function sendMessage(type, data) {
+  parent.postMessage({type, data});
+}
+
 window.addEventListener("message", event => {
-  const data = event.data;
-  switch (data.type) {
+  const type = event.data.type;
+  const data = event.data.data;
+  switch (type) {
     case "refresh":
       refreshContents(data.filepath);
       return;
-    case "synctex":
-      handleSynctex(data);
+    case "setposition":
+      scrollToPosition(data);
       return;
     default:
-      throw new Error(`Unexpected message type ${data.type} received`);
+      throw new Error(`Unexpected message type "${type}" received`);
   }
 });
 
@@ -28,6 +33,7 @@ async function refreshContents(filepath) {
   if (typeof filepath !== "string") {
     throw new Error(`Expected string as filepath, got ${filepath}`);
   }
+  // TODO: Only refresh when `display: none` is false (otherwise get rendering error)
   const params = getDocumentParams();
   PDFViewerApplication.open(filepath);
   document.addEventListener(
@@ -53,17 +59,17 @@ function restoreFromParams({scale, scrollTop, scrollLeft}) {
   container.scrollLeft = scrollLeft;
 }
 
-function handleSynctex({page, x: pdfX, y: pdfY}) {
-  if (typeof page !== "number") {
+function scrollToPosition({pageIndex, x: pdfX, y: pdfY}) {
+  if (typeof pageIndex !== "number") {
     throw new Error("Expected page number");
   }
+  const pageView = PDFViewerApplication.pdfViewer.getPageView(pageIndex);
 
   const clientHeight = PDFViewerApplication.appConfig.mainContainer.clientHeight;
   const clientWidth = PDFViewerApplication.appConfig.mainContainer.clientWidth;
 
-  const pageView = PDFViewerApplication.pdfViewer.getPageView(page);
   const [x, y] = pageView.viewport.convertToViewportPoint(pdfX, pdfY);
-  const height = pageView.div.offsetTop;
+  const height = pageView.canvas.offsetTop;
 
   const percentDown = 0.50;
   const percentAcross = 0.50;
@@ -77,20 +83,40 @@ function handleSynctex({page, x: pdfX, y: pdfY}) {
 document.addEventListener("pagerendered", evt => {
   const page = evt.detail.pageNumber - 1;
   const pageView = PDFViewerApplication.pdfViewer.getPageView(page);
+
   pageView.div.onclick = e => {
-    console.log(e);
-    const rect = pageView.div.getBoundingClientRect();
-    const relX = e.clientX - rect.left;
-    const relY = e.clientY - rect.top;
-    const [x, y] = pageView.viewport.convertToPdfPoint(relX, relY);
-    parent.postMessage({type: "click", position: {x, y}, page: page});
+    const position = getPdfPosition(pageView, e);
+    if (position !== undefined) {
+      sendMessage("click", {position});
+    }
   };
+
+  pageView.div.ondblclick = e => {
+    const position = getPdfPosition(pageView, e);
+    if (position !== undefined) {
+      sendMessage("dblclick", {position});
+    }
+  }
 }, {capture: true, passive: true});
+
+function getPdfPosition(pageView, click) {
+  const rect = pageView.canvas.getBoundingClientRect();
+  const relX = click.clientX - rect.left;
+  const relY = click.clientY - rect.top;
+  const [x, y] = pageView.viewport.convertToPdfPoint(relX, relY);
+  const [x1, y1, x2, y2] = pageView.viewport.viewBox;
+
+  if (x < x1 || x > x2 || y < y1 || y > y2) {
+    return undefined;
+  }
+
+  return {x, y, height: y2 - y1, width: x2 - x1, pageIndex: pageView.pdfPage.pageIndex};
+}
 
 document.addEventListener("click", evt => {
   const srcElement = evt.srcElement;
   if (srcElement.href !== undefined && srcElement.target === "_top") {
     evt.preventDefault();
-    parent.postMessage({type: "link", href: srcElement.href});
+    sendMessage("link", {href: srcElement.href});
   }
 });

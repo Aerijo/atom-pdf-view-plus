@@ -26,6 +26,14 @@
   "deserializers": {
     "PdfEditor": "deserialize"
   },
+  "providedServices": {
+    "pdfview": {
+      "description": "Subscribe to PDF actions such as opening files and clicks",
+      "versions": {
+        "0.0.0": "providePdfEvents"
+      }
+    }
+  },
   "configSchema": {
     "closeViewWhenFileDeleted": {
       "type": "boolean",

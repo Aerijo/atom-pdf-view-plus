@@ -1,9 +1,9 @@
 import * as fs from "fs";
 import * as path from "path";
 import {File, Disposable, CompositeDisposable} from "atom";
-import PdfEditorView from "./pdf-editor-view";
+import {PdfEditorView, PdfClick, PdfPosition} from "./pdf-editor-view";
 
-export default class PdfEditor {
+export class PdfEditor {
   static deserialize({filePath}: any) {
     if (fs.statSync(filePath).isFile()) {
       return new PdfEditor(filePath);
@@ -72,6 +72,10 @@ export default class PdfEditor {
     }
   }
 
+  onDidDispose(cb: () => void) {
+    this.subscriptions.add(new Disposable(cb));
+  }
+
   getPath() {
     return this.file.getPath();
   }
@@ -93,5 +97,17 @@ export default class PdfEditor {
 
   isEqual(other: any) {
     return other instanceof PdfEditor && this.getURI() === other.getURI();
+  }
+
+  onDidClick(cb: (pos: PdfClick) => void) {
+    this.view.onDidClick(cb);
+  }
+
+  onDidDoubleClick(cb: (pos: PdfClick) => void) {
+    this.view.onDidDoubleClick(cb);
+  }
+
+  scrollToPosition(pos: PdfPosition) {
+    this.view.scrollToPosition(pos);
   }
 }

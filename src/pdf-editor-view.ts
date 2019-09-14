@@ -1,64 +1,100 @@
 import * as path from "path";
-import PdfEditor from "./pdf-editor";
+import {PdfEditor} from "./pdf-editor";
+import {EventEmitter} from "events";
 
 interface Message {
-  origin: string,
-  data: any,
-  source: any,
+  origin: string;
+  data: {
+    type: string;
+    data: any;
+  };
+  source: any;
 }
 
-export default class PdfEditorView {
+/**
+ * Information to precisely locate a position in a given PDF.
+ * - The pageIndex is 0 based
+ * - x and y are PDF points from the bottom left corner
+ */
+export interface PdfPosition {
+  pageIndex: number;
+  x: number;
+  y: number;
+}
+
+// width and height are the dimensions of the page in PDF points
+export type PdfPositionWithDimen = PdfPosition | {width: number; height: number};
+
+export interface PdfClick {
+  position: PdfPositionWithDimen;
+}
+
+export class PdfEditorView {
   element: any;
   editor: PdfEditor;
   ready: boolean;
+  events: EventEmitter;
 
   constructor(editor: PdfEditor) {
-    this.editor = editor;
     const frame = document.createElement("iframe");
-    this.element = frame;
-
     frame.setAttribute("id", "pdf-frame");
+
+    this.events = new EventEmitter();
+    this.editor = editor;
+    this.element = frame;
 
     this.ready = false;
     frame.onload = () => {
       this.ready = true;
     };
 
-    window.addEventListener("message", evt => {this.handleMessage(evt as any)});
+    window.addEventListener("message", evt => {
+      this.handleMessage(evt as any);
+    });
 
     this.setFile(this.filepath);
   }
 
+  sendMessage(type: string, data: any) {
+    this.element.contentWindow.postMessage({type, data});
+  }
+
   handleMessage(msg: Message) {
-    if (this.element.contentWindow !== msg.source) { return; }
-    const type: string = msg.data.type;
+    if (msg.source !== this.element.contentWindow) {
+      return;
+    }
+
+    const type = msg.data.type;
+    const data = msg.data.data;
+
     switch (type) {
       case "link":
-        this.handleLink(msg.data.href);
+        this.handleLink(data);
         return;
       case "click":
-        this.handleClick(msg.data);
+        this.handleClick(data);
+        return;
+      case "dblclick":
+        this.handleDblclick(data);
         return;
       default:
         throw new Error(`Unexpected message type ${type} from iframe`);
     }
   }
 
-  async handleLink(link: string) {
+  async handleLink({link}: any) {
+    if (typeof link !== "string") {
+      throw new Error("Expected external link to be a string");
+    }
     (await import("electron")).shell.openExternal(link);
   }
 
-  handleClick({position, page}: any) {
-    const {x, y} = position;
+  handleClick(clickData: any) {
+    this.events.emit("click", clickData);
+  }
 
-    setTimeout(() => {
-      this.element.contentWindow.postMessage({
-        type: "synctex",
-        page: (page as number),
-        x,
-        y,
-      });
-    }, 0);
+  handleDblclick(clickData: any) {
+    this.events.emit("dblclick", clickData);
   }
 
   get filepath() {
@@ -77,14 +113,23 @@ export default class PdfEditorView {
 
   update() {
     if (this.ready) {
-      this.element.contentWindow.postMessage({
-        type: "refresh",
-        filepath: this.filepath,
-      });
+      this.sendMessage("refresh", {filepath: this.filepath});
     } else {
       this.setFile(this.filepath);
     }
   }
 
   destroy() {}
+
+  onDidClick(cb: (click: PdfClick) => void) {
+    this.events.on("click", cb);
+  }
+
+  onDidDoubleClick(cb: (click: PdfClick) => void) {
+    this.events.on("dblclick", cb);
+  }
+
+  scrollToPosition(pos: PdfPosition) {
+    this.sendMessage("setposition", pos);
+  }
 }

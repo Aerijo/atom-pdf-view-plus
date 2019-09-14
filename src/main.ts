@@ -1,23 +1,33 @@
 import {CompositeDisposable} from "atom";
 import * as path from "path";
-import PdfEditor from "./pdf-editor";
+import {PdfEditor} from "./pdf-editor";
+
+interface PdfEvents {
+  onDidOpenPdf(cb: (pdf: PdfEditor) => void): void;
+}
 
 class PdfViewPackage {
   subscriptions: CompositeDisposable;
   pdfExtensions: Set<string>;
 
+  editors: Set<PdfEditor>;
+  openSubscriptions: Set<(pdf: PdfEditor) => void>;
+
   constructor() {
     this.subscriptions = new CompositeDisposable();
     this.pdfExtensions = new Set();
+    this.openSubscriptions = new Set();
+    this.editors = new Set();
   }
 
   activate() {
-    console.log("Activated pdf-view-plus");
     this.subscriptions.add(
       atom.workspace.addOpener(uri => {
         const uriExtension = path.extname(uri).toLowerCase();
         if (this.pdfExtensions.has(uriExtension)) {
-          return new PdfEditor(uri);
+          const editor = new PdfEditor(uri);
+          this.subscribeToEditor(editor);
+          return editor;
         }
       }),
       atom.config.observe("pdf-view-plus.fileExtensions", this.updateFileExtensions.bind(this))
@@ -25,7 +35,21 @@ class PdfViewPackage {
   }
 
   deserialize(params: any) {
-    return PdfEditor.deserialize(params);
+    const pdfEditor = PdfEditor.deserialize(params);
+    if (pdfEditor) {
+      this.subscribeToEditor(pdfEditor);
+    }
+    return pdfEditor;
+  }
+
+  subscribeToEditor(editor: PdfEditor) {
+    this.editors.add(editor);
+    editor.onDidDispose(() => {
+      this.editors.delete(editor);
+    });
+    this.openSubscriptions.forEach(cb => {
+      cb(editor);
+    });
   }
 
   dispose() {
@@ -42,6 +66,17 @@ class PdfViewPackage {
       extension = extension.toLowerCase().replace(/^\.*/, ".");
       this.pdfExtensions.add(extension);
     }
+  }
+
+  providePdfEvents(): PdfEvents {
+    return {
+      onDidOpenPdf: cb => {
+        this.editors.forEach(editor => {
+          cb(editor);
+        });
+        this.openSubscriptions.add(cb);
+      },
+    };
   }
 }
 
