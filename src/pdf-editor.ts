@@ -37,7 +37,8 @@ export class PdfEditor {
     };
 
     this.subscriptions.add(
-      this.file.onDidRename(() => { // Doesn't seem to work (on Linux at least)
+      this.file.onDidRename(() => {
+        // Doesn't seem to work (on Linux at least)
         this.updateTitle();
       }),
       this.file.onDidChange(() => {
