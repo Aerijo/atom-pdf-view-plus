@@ -119,7 +119,9 @@ export class PdfEditorView {
     }
   }
 
-  destroy() {}
+  destroy() {
+    this.ready = false;
+  }
 
   onDidClick(cb: (click: PdfClick) => void) {
     this.events.on("click", cb);
