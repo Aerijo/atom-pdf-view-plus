@@ -34,7 +34,7 @@ class PdfViewPackage {
         }
       }),
       atom.config.observe("pdf-view-plus.fileExtensions", this.updateFileExtensions.bind(this)),
-      atom.config.observe("pdf-view-plus.enableSynctex", this.toggleSynctex.bind(this)),
+      atom.config.observe("pdf-view-plus.enableSynctex", this.toggleSynctex.bind(this))
     );
   }
 

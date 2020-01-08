@@ -1,4 +1,4 @@
-import { PdfEvents } from "./main";
+import {PdfEvents} from "./main";
 import * as cp from "child_process";
 import * as path from "path";
 
@@ -7,10 +7,12 @@ export class SynctexConsumer {
     pdfView.onDidOpenPdf(editor => {
       editor.onDidDoubleClick(evt => {
         const {pageIndex, x, y, height} = evt.position;
-        const cmd = `synctex edit -o "${pageIndex + 1}:${Math.floor(x)}:${Math.floor(height - y)}:${editor.getPath()}"`;
+        const cmd = `synctex edit -o "${pageIndex + 1}:${Math.floor(x)}:${Math.floor(
+          height - y
+        )}:${editor.getPath()}"`;
         cp.exec(cmd, (err, stdout) => {
           if (err) {
-             return;
+            return;
           }
           const location = parseSynctex(stdout);
 
@@ -35,7 +37,9 @@ function parseSynctex(stdout: string) {
   const lines = stdout.split(/\r?\n/g);
   for (const line of lines) {
     const match = line.match(/^(\w+):(.+)$/);
-    if (!match) { continue; }
+    if (!match) {
+      continue;
+    }
     const key = match[1];
     const val = match[2];
     switch (key) {
