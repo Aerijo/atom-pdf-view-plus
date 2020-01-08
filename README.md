@@ -5,7 +5,7 @@ This package provides a PDF viewer for Atom. It is intended to replace [`pdf-vie
 
 ## Features
 
-This package integrates Mozilla's PDF.js platform and viewer almost directly into an Atom pane. This gives you the same set of features you find in the FireFox PDF viewer (which also uses PDF.js), and means updates upstream can be easily incorporated.
+This package integrates Mozilla's PDF.js platform and viewer almost directly into an Atom pane. This gives you the same set of features you find in the Firefox PDF viewer (which also uses PDF.js), and means updates upstream can be easily incorporated.
 
 For package developers, there is also a [`pdfview`](https://github.com/Aerijo/atom-pdf-view-plus/wiki/pdfview-API) service that allows for interacting with open PDFs. The reverse SyncTeX capability of this package works using this service.
 
