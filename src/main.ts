@@ -1,8 +1,9 @@
 import {CompositeDisposable} from "atom";
 import * as path from "path";
 import {PdfEditor} from "./pdf-editor";
+import {SynctexConsumer} from "./pfdview-consumer-synctex";
 
-interface PdfEvents {
+export interface PdfEvents {
   onDidOpenPdf(cb: (pdf: PdfEditor) => void): void;
 }
 
@@ -12,6 +13,8 @@ class PdfViewPackage {
 
   editors: Set<PdfEditor>;
   openSubscriptions: Set<(pdf: PdfEditor) => void>;
+
+  synctexConsumer?: SynctexConsumer;
 
   constructor() {
     this.subscriptions = new CompositeDisposable();
@@ -30,7 +33,8 @@ class PdfViewPackage {
           return editor;
         }
       }),
-      atom.config.observe("pdf-view-plus.fileExtensions", this.updateFileExtensions.bind(this))
+      atom.config.observe("pdf-view-plus.fileExtensions", this.updateFileExtensions.bind(this)),
+      atom.config.observe("pdf-view-plus.enableSynctex", this.toggleSynctex.bind(this)),
     );
   }
 
@@ -65,6 +69,17 @@ class PdfViewPackage {
     for (let extension of extensions) {
       extension = extension.toLowerCase().replace(/^\.*/, ".");
       this.pdfExtensions.add(extension);
+    }
+  }
+
+  toggleSynctex(enabled: boolean) {
+    if (enabled) {
+      if (!this.synctexConsumer) {
+        this.synctexConsumer = new SynctexConsumer();
+        this.synctexConsumer.consumePdfview(this.providePdfEvents());
+      }
+    } else if (this.synctexConsumer) {
+      atom.notifications.addInfo("Restart to disable SyncTeX");
     }
   }
 

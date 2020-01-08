@@ -51,6 +51,12 @@
       "items": {
         "type": "string"
       }
+    },
+    "enableSynctex": {
+      "type": "boolean",
+      "default": false,
+      "title": "Enable SyncTeX",
+      "description": "Allows double clicking a generated TeX PDF to open the corresponding source file location"
     }
   },
   "devDependencies": {
