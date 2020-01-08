@@ -23,7 +23,7 @@ export interface PdfPosition {
 }
 
 // width and height are the dimensions of the page in PDF points
-export type PdfPositionWithDimen = PdfPosition | {width: number; height: number};
+export type PdfPositionWithDimen = PdfPosition & {width: number; height: number};
 
 export interface PdfClick {
   position: PdfPositionWithDimen;
