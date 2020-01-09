@@ -12,7 +12,7 @@ For package developers, there is also a [`pdfview`](https://github.com/Aerijo/at
 
 ## Why not `pdf-view`
 
-The `pdf-view` package uses the core of PDF.js but with a custom viewer. Among other issues, its viewer at the time of writing loads all pages in memory meaning large PDFs can cause severe performance issues. There is also an undiagnosed memory leak, causing RAM usages to rise with every reloaded PDF. This is not a problem for light use, but it can lead to a crash when frequently reloading PDFs, such as when recompiling LaTeX.
+The `pdf-view` package uses the core of PDF.js but with a custom viewer. Among other issues, its viewer at the time of writing loads all pages in memory meaning large PDFs can cause severe performance issues. There is also an undiagnosed memory leak, causing RAM usage to rise with every reloaded PDF. This is not a problem for light use, but it can lead to a crash when frequently reloading PDFs, such as when recompiling LaTeX.
 
 In comparison, the Mozilla viewer loads only visible pages, and has the PDF.js team behind it to patch any memory leaks. Loading only visible pages means they may take a moment to render when randomly accessed, but the overall performance is much better in large files.
 
