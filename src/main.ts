@@ -2,7 +2,7 @@ import {Disposable, CompositeDisposable} from "atom";
 import * as path from "path";
 import {PdfEditor} from "./pdf-editor";
 import {SynctexConsumer} from "./pfdview-consumer-synctex";
-import { PdfEvents } from './pdfview-api';
+import {PdfEvents} from "./pdfview-api";
 
 class PdfViewPackage {
   subscriptions: CompositeDisposable;

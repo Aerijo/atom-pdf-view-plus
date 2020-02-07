@@ -1,7 +1,7 @@
 import * as path from "path";
 import {PdfEditor} from "./pdf-editor";
-import { PdfMouseEvent, PdfPosition } from './pdfview-api';
-import { Emitter } from 'atom';
+import {PdfMouseEvent, PdfPosition} from "./pdfview-api";
+import {Emitter} from "atom";
 
 interface Message {
   origin: string;

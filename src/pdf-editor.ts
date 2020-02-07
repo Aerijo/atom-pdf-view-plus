@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import {File, Disposable, CompositeDisposable} from "atom";
 import {PdfEditorView} from "./pdf-editor-view";
-import { PdfView, PdfMouseEvent, PdfPosition } from './pdfview-api';
+import {PdfView, PdfMouseEvent, PdfPosition} from "./pdfview-api";
 
 export class PdfEditor implements PdfView {
   static deserialize({filePath}: any) {

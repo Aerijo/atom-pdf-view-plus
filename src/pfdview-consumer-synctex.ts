@@ -1,6 +1,6 @@
 import * as cp from "child_process";
 import * as path from "path";
-import { PdfEvents, PdfView } from './pdfview-api';
+import {PdfEvents, PdfView} from "./pdfview-api";
 import {CompositeDisposable} from "atom";
 
 export class SynctexConsumer {
@@ -20,39 +20,43 @@ export class SynctexConsumer {
   }
 
   consumePdfview(pdfView: PdfEvents) {
-    this.subscriptions.add(pdfView.observePdfViews(editor => {
-      const subs = new CompositeDisposable();
+    this.subscriptions.add(
+      pdfView.observePdfViews(editor => {
+        const subs = new CompositeDisposable();
 
-      subs.add(editor.onDidDoubleClick(evt => {
-        if (this.destroyed) {
-          return;
-        }
+        subs.add(
+          editor.onDidDoubleClick(evt => {
+            if (this.destroyed) {
+              return;
+            }
 
-        const {pageIndex, pointX, pointY, height} = evt.position;
-        const cmd = `synctex edit -o "${pageIndex + 1}:${Math.floor(pointX)}:${Math.floor(
-          height - pointY
-        )}:${editor.getPath()}"`;
-        cp.exec(cmd, (err, stdout) => {
-          if (err) {
-            return;
-          }
-          const location = parseSynctex(stdout);
+            const {pageIndex, pointX, pointY, height} = evt.position;
+            const cmd = `synctex edit -o "${pageIndex + 1}:${Math.floor(pointX)}:${Math.floor(
+              height - pointY
+            )}:${editor.getPath()}"`;
+            cp.exec(cmd, (err, stdout) => {
+              if (err) {
+                return;
+              }
+              const location = parseSynctex(stdout);
 
-          if (location.source === undefined || location.row === undefined) {
-            console.error("Could not read synctex output properly");
-            return;
-          }
+              if (location.source === undefined || location.row === undefined) {
+                console.error("Could not read synctex output properly");
+                return;
+              }
 
-          atom.workspace.open(location.source, {
-            initialLine: location.row,
-            initialColumn: location.column >= 0 ? location.column : 0,
-            searchAllPanes: true,
-          });
-        });
-      }));
+              atom.workspace.open(location.source, {
+                initialLine: location.row,
+                initialColumn: location.column >= 0 ? location.column : 0,
+                searchAllPanes: true,
+              });
+            });
+          })
+        );
 
-      this.editorSubscriptions.set(editor, subs);
-    }));
+        this.editorSubscriptions.set(editor, subs);
+      })
+    );
   }
 }
 
