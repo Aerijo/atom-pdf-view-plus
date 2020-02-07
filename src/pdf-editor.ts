@@ -41,10 +41,12 @@ export class PdfEditor implements PdfView {
   }
 
   subscribeToFile() {
+    const debounceWait = atom.config.get("pdf-view-plus.autoreloadDebounce");
+
     let timerID: number;
     const debounced = (callback: Function) => {
       clearTimeout(timerID);
-      timerID = setTimeout(callback, 200);
+      timerID = setTimeout(callback, debounceWait);
     };
 
     this.fileSubscriptions.add(

@@ -1,5 +1,5 @@
 // Hides "basic debug information" and other cruft logged by PDFjs
-// console.log = () => {}
+console.log = () => {}
 
 (function(){
 
@@ -45,6 +45,7 @@ function handleChangedStyle(_mutationList, observer) {
   }
 }
 
+let lastParams = {scale: 1, scrollTop: 0, scrollLeft: 0}
 async function refreshContents(filepath) {
   if (typeof filepath !== "string") {
     throw new Error(`Expected string as filepath, got ${filepath}`);
@@ -60,21 +61,28 @@ async function refreshContents(filepath) {
     return;
   }
 
-  const params = getDocumentParams();
+  lastParams = getDocumentParams() || lastParams;
   PDFViewerApplication.open(filepath);
   document.addEventListener(
     "pagesinit",
-    () => {restoreFromParams(params)},
+    () => {restoreFromParams(lastParams)},
     {once: true, passive: true}
   );
 }
 
 function getDocumentParams() {
   const container = document.getElementById("viewerContainer");
-  return {
+  const params = {
     scale: PDFViewerApplication.pdfViewer.currentScaleValue,
     scrollTop: container.scrollTop,
     scrollLeft: container.scrollLeft,
+  };
+
+  // When the PDF is incomplete (e.g., long rebuild), scale will be null. Probably.
+  if (params.scale !== null) {
+    return params;
+  } else {
+    return undefined;
   }
 }
 
