@@ -1,11 +1,8 @@
-import {CompositeDisposable} from "atom";
+import {Disposable, CompositeDisposable} from "atom";
 import * as path from "path";
 import {PdfEditor} from "./pdf-editor";
 import {SynctexConsumer} from "./pfdview-consumer-synctex";
-
-export interface PdfEvents {
-  onDidOpenPdf(cb: (pdf: PdfEditor) => void): void;
-}
+import { PdfEvents } from './pdfview-api';
 
 class PdfViewPackage {
   subscriptions: CompositeDisposable;
@@ -85,11 +82,20 @@ class PdfViewPackage {
 
   providePdfEvents(): PdfEvents {
     return {
-      onDidOpenPdf: cb => {
+      observePdfViews: cb => {
         this.editors.forEach(editor => {
           cb(editor);
         });
         this.openSubscriptions.add(cb);
+        return new Disposable(() => {
+          this.openSubscriptions.delete(cb);
+        });
+      },
+      onDidOpenPdfView: cb => {
+        this.openSubscriptions.add(cb);
+        return new Disposable(() => {
+          this.openSubscriptions.delete(cb);
+        });
       },
     };
   }

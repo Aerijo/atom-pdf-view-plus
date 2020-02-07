@@ -85,7 +85,7 @@ function restoreFromParams({scale, scrollTop, scrollLeft}) {
   container.scrollLeft = scrollLeft;
 }
 
-function scrollToPosition({pageIndex, x: pdfX, y: pdfY}) {
+function scrollToPosition({pageIndex, pointX, pointY}) {
   if (typeof pageIndex !== "number") {
     throw new Error("Expected page number");
   }
@@ -94,8 +94,8 @@ function scrollToPosition({pageIndex, x: pdfX, y: pdfY}) {
   const clientHeight = PDFViewerApplication.appConfig.mainContainer.clientHeight;
   const clientWidth = PDFViewerApplication.appConfig.mainContainer.clientWidth;
 
-  const [x, y] = pageView.viewport.convertToViewportPoint(pdfX, pdfY);
   const height = pageView.canvas.offsetTop;
+  const [x, y] = pageView.viewport.convertToViewportPoint(pointX, pointY);
 
   const percentDown = 0.50;
   const percentAcross = 0.50;
@@ -111,32 +111,55 @@ document.addEventListener("pagerendered", evt => {
   const pageView = PDFViewerApplication.pdfViewer.getPageView(page);
 
   pageView.div.onclick = e => {
-    const position = getPdfPosition(pageView, e);
-    if (position !== undefined) {
-      sendMessage("click", {position});
+    const pdfEvent = buildMouseEvent(pageView, e);
+    if (pdfEvent !== undefined) {
+      sendMessage("click", pdfEvent);
     }
   };
 
   pageView.div.ondblclick = e => {
-    const position = getPdfPosition(pageView, e);
-    if (position !== undefined) {
-      sendMessage("dblclick", {position});
+    const pdfEvent = buildMouseEvent(pageView, e);
+    if (pdfEvent !== undefined) {
+      sendMessage("dblclick", pdfEvent);
     }
-  }
+  };
 }, {capture: true, passive: true});
 
 function getPdfPosition(pageView, click) {
   const rect = pageView.canvas.getBoundingClientRect();
   const relX = click.clientX - rect.left;
   const relY = click.clientY - rect.top;
-  const [x, y] = pageView.viewport.convertToPdfPoint(relX, relY);
+  const [pointX, pointY] = pageView.viewport.convertToPdfPoint(relX, relY);
   const [x1, y1, x2, y2] = pageView.viewport.viewBox;
 
-  if (x < x1 || x > x2 || y < y1 || y > y2) {
+  if (pointX < x1 || pointX > x2 || pointY < y1 || pointY > y2) {
     return undefined;
   }
 
-  return {x, y, height: y2 - y1, width: x2 - x1, pageIndex: pageView.pdfPage.pageIndex};
+  return {
+    pointX,
+    pointY,
+    width: x2 - x1,
+    height: y2 - y1,
+    pageIndex: pageView.pdfPage.pageIndex
+  };
+}
+
+function buildMouseEvent(pageView, e) {
+  const position = getPdfPosition(pageView, e);
+  if (!position) {
+    return undefined;
+  }
+
+  return {
+    position,
+    ctrlKey: e.ctrlKey,
+    altKey: e.altKey,
+    metaKey: e.metaKey,
+    shiftKey: e.shiftKey,
+    button: e.button,
+    buttons: e.buttons,
+  };
 }
 
 document.addEventListener("click", evt => {
@@ -146,6 +169,5 @@ document.addEventListener("click", evt => {
     sendMessage("link", {href: srcElement.href});
   }
 });
-
 
 })();

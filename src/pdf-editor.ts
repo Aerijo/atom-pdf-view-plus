@@ -1,9 +1,10 @@
 import * as fs from "fs";
 import * as path from "path";
 import {File, Disposable, CompositeDisposable} from "atom";
-import {PdfEditorView, PdfClick, PdfPosition} from "./pdf-editor-view";
+import {PdfEditorView} from "./pdf-editor-view";
+import { PdfView, PdfMouseEvent, PdfPosition } from './pdfview-api';
 
-export class PdfEditor {
+export class PdfEditor implements PdfView {
   static deserialize({filePath}: any) {
     let isFile = false;
     try {
@@ -20,31 +21,43 @@ export class PdfEditor {
   }
 
   file: File;
+  fileSubscriptions: CompositeDisposable;
   view: PdfEditorView;
-  subscriptions: CompositeDisposable;
   onDidChangeTitleCallbacks: Set<Function>;
+  autoReload: boolean;
+
+  subscriptions: CompositeDisposable;
 
   constructor(filePath: string) {
     this.file = new File(filePath);
-    this.subscriptions = new CompositeDisposable();
+    this.fileSubscriptions = new CompositeDisposable();
     this.view = new PdfEditorView(this);
     this.onDidChangeTitleCallbacks = new Set();
+    this.autoReload = true;
 
+    this.subscriptions = new CompositeDisposable();
+
+    this.subscribeToFile();
+  }
+
+  subscribeToFile() {
     let timerID: number;
     const debounced = (callback: Function) => {
       clearTimeout(timerID);
       timerID = setTimeout(callback, 200);
     };
 
-    this.subscriptions.add(
+    this.fileSubscriptions.add(
       this.file.onDidRename(() => {
         // Doesn't seem to work (on Linux at least)
         this.updateTitle();
       }),
       this.file.onDidChange(() => {
-        debounced(() => {
-          this.view.update();
-        });
+        if (this.autoReload) {
+          debounced(() => {
+            this.view.update();
+          });
+        }
       }),
       this.file.onDidDelete(() => {
         if (atom.config.get("pdf-view-plus.closeViewWhenFileDeleted")) {
@@ -86,6 +99,10 @@ export class PdfEditor {
     return this.file.getPath();
   }
 
+  getUri() {
+    return this.getURI();
+  }
+
   // Used by atom.workspace.open to detect already open URIs
   getURI() {
     return this.getPath();
@@ -111,15 +128,37 @@ export class PdfEditor {
     return other instanceof PdfEditor && this.getURI() === other.getURI();
   }
 
-  onDidClick(cb: (pos: PdfClick) => void) {
-    this.view.onDidClick(cb);
+  onDidInteract(cb: (click: PdfMouseEvent) => void): Disposable {
+    return this.view.events.on("click", (click: PdfMouseEvent) => {
+      if (click.ctrlKey) {
+        cb(click);
+      }
+    });
   }
 
-  onDidDoubleClick(cb: (pos: PdfClick) => void) {
-    this.view.onDidDoubleClick(cb);
+  onDidClick(cb: (pos: PdfMouseEvent) => void): Disposable {
+    return this.view.events.on("click", cb);
+  }
+
+  onDidDoubleClick(cb: (pos: PdfMouseEvent) => void): Disposable {
+    return this.view.events.on("dblclick", cb);
   }
 
   scrollToPosition(pos: PdfPosition) {
     this.view.scrollToPosition(pos);
+  }
+
+  setAutoReload(enabled: boolean) {
+    this.autoReload = enabled;
+  }
+
+  reload(uri?: string) {
+    if (uri && uri !== this.getURI()) {
+      this.fileSubscriptions.dispose();
+      this.fileSubscriptions = new CompositeDisposable();
+      this.file = new File(uri);
+      this.subscribeToFile();
+    }
+    this.view.update();
   }
 }

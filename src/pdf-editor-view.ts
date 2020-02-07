@@ -1,6 +1,7 @@
 import * as path from "path";
 import {PdfEditor} from "./pdf-editor";
-import {EventEmitter} from "events";
+import { PdfMouseEvent, PdfPosition } from './pdfview-api';
+import { Emitter } from 'atom';
 
 interface Message {
   origin: string;
@@ -11,35 +12,17 @@ interface Message {
   source: any;
 }
 
-/**
- * Information to precisely locate a position in a given PDF.
- * - The pageIndex is 0 based
- * - x and y are PDF points from the bottom left corner
- */
-export interface PdfPosition {
-  pageIndex: number;
-  x: number;
-  y: number;
-}
-
-// width and height are the dimensions of the page in PDF points
-export type PdfPositionWithDimen = PdfPosition & {width: number; height: number};
-
-export interface PdfClick {
-  position: PdfPositionWithDimen;
-}
-
 export class PdfEditorView {
   element: any;
   editor: PdfEditor;
   ready: boolean;
-  events: EventEmitter;
+  events: Emitter;
 
   constructor(editor: PdfEditor) {
     const frame = document.createElement("iframe");
     frame.setAttribute("id", "pdf-frame");
 
-    this.events = new EventEmitter();
+    this.events = new Emitter();
     this.editor = editor;
     this.element = frame;
 
@@ -89,11 +72,11 @@ export class PdfEditorView {
     (await import("electron")).shell.openExternal(link);
   }
 
-  handleClick(clickData: any) {
+  handleClick(clickData: PdfMouseEvent) {
     this.events.emit("click", clickData);
   }
 
-  handleDblclick(clickData: any) {
+  handleDblclick(clickData: PdfMouseEvent) {
     this.events.emit("dblclick", clickData);
   }
 
@@ -121,14 +104,6 @@ export class PdfEditorView {
 
   destroy() {
     this.ready = false;
-  }
-
-  onDidClick(cb: (click: PdfClick) => void) {
-    this.events.on("click", cb);
-  }
-
-  onDidDoubleClick(cb: (click: PdfClick) => void) {
-    this.events.on("dblclick", cb);
   }
 
   scrollToPosition(pos: PdfPosition) {

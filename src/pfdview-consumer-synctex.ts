@@ -1,14 +1,36 @@
-import {PdfEvents} from "./main";
 import * as cp from "child_process";
 import * as path from "path";
+import { PdfEvents, PdfView } from './pdfview-api';
+import {CompositeDisposable} from "atom";
 
 export class SynctexConsumer {
+  editorSubscriptions: WeakMap<PdfView, CompositeDisposable>;
+  subscriptions: CompositeDisposable;
+  destroyed: boolean;
+
+  constructor() {
+    this.editorSubscriptions = new WeakMap(); // TODO: Allow for unsubscription instead of tracking destroyed
+    this.subscriptions = new CompositeDisposable();
+    this.destroyed = false;
+  }
+
+  destroy() {
+    this.subscriptions.dispose();
+    this.destroyed = true;
+  }
+
   consumePdfview(pdfView: PdfEvents) {
-    pdfView.onDidOpenPdf(editor => {
-      editor.onDidDoubleClick(evt => {
-        const {pageIndex, x, y, height} = evt.position;
-        const cmd = `synctex edit -o "${pageIndex + 1}:${Math.floor(x)}:${Math.floor(
-          height - y
+    this.subscriptions.add(pdfView.observePdfViews(editor => {
+      const subs = new CompositeDisposable();
+
+      subs.add(editor.onDidDoubleClick(evt => {
+        if (this.destroyed) {
+          return;
+        }
+
+        const {pageIndex, pointX, pointY, height} = evt.position;
+        const cmd = `synctex edit -o "${pageIndex + 1}:${Math.floor(pointX)}:${Math.floor(
+          height - pointY
         )}:${editor.getPath()}"`;
         cp.exec(cmd, (err, stdout) => {
           if (err) {
@@ -27,8 +49,10 @@ export class SynctexConsumer {
             searchAllPanes: true,
           });
         });
-      });
-    });
+      }));
+
+      this.editorSubscriptions.set(editor, subs);
+    }));
   }
 }
 
