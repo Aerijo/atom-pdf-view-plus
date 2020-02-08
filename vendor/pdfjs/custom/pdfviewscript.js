@@ -114,8 +114,6 @@ function scrollToPosition({pageIndex, pointX, pointY, origin}) {
   const percentDown = 0.50;
   const percentAcross = 0.50;
 
-  console.log(`scrolling to page ${pageIndex + 1} (${pointX}, ${pointY})`)
-
   PDFViewerApplication.pdfViewer.container.scrollTo({
     top: height + y - clientHeight * percentDown,
     left: x - clientWidth * percentAcross,

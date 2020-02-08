@@ -32,14 +32,12 @@ export class SynctexConsumer {
         const position = editor.getLastCursor().getBufferPosition();
 
         const command = `synctex view -i ${position.row + 1}:${position.column + 1}:"${file}" -o "${pdf.getPath()}"`;
-        console.log(command);
         cp.exec(command, (err, stdout, stderr) => {
           if (err) {
             console.warn(stderr)
             return;
           }
           const location = parseForwardSynctex(stdout);
-          console.log(location);
           if (typeof pdf.scrollToPosition === "function") {
             pdf.scrollToPosition(location, {origin: "TL"});
           };
