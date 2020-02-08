@@ -144,8 +144,8 @@ export class PdfEditor implements PdfView {
     return this.view.events.on("dblclick", cb);
   }
 
-  scrollToPosition(pos: PdfPosition) {
-    this.view.scrollToPosition(pos);
+  scrollToPosition(pos: PdfPosition, options?: any) {
+    this.view.scrollToPosition(pos, options);
   }
 
   setAutoReload(enabled: boolean) {

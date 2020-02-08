@@ -93,7 +93,7 @@ function restoreFromParams({scale, scrollTop, scrollLeft}) {
   container.scrollLeft = scrollLeft;
 }
 
-function scrollToPosition({pageIndex, pointX, pointY}) {
+function scrollToPosition({pageIndex, pointX, pointY, origin}) {
   if (typeof pageIndex !== "number") {
     throw new Error("Expected page number");
   }
@@ -102,11 +102,19 @@ function scrollToPosition({pageIndex, pointX, pointY}) {
   const clientHeight = PDFViewerApplication.appConfig.mainContainer.clientHeight;
   const clientWidth = PDFViewerApplication.appConfig.mainContainer.clientWidth;
 
-  const height = pageView.canvas.offsetTop;
+  const height = pageView.div.offsetTop;
+
+  if (origin === "TL") {
+    const [, y1,, y2] = pageView.viewport.viewBox;
+    pointY = y2 - y1 - pointY;
+  }
+
   const [x, y] = pageView.viewport.convertToViewportPoint(pointX, pointY);
 
   const percentDown = 0.50;
   const percentAcross = 0.50;
+
+  console.log(`scrolling to page ${pageIndex + 1} (${pointX}, ${pointY})`)
 
   PDFViewerApplication.pdfViewer.container.scrollTo({
     top: height + y - clientHeight * percentDown,

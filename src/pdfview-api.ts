@@ -4,6 +4,7 @@ export interface PdfPosition {
   pageIndex: number;
   pointX: number;
   pointY: number;
+  origin?: string
 }
 
 export interface PdfPositionWithDimen extends PdfPosition {
@@ -27,7 +28,7 @@ export interface PdfView {
   onDidInteract(cb: (evt: PdfMouseEvent) => void): Disposable;
   onDidClick(cb: (evt: PdfMouseEvent) => void): Disposable;
   onDidDoubleClick(cb: (evt: PdfMouseEvent) => void): Disposable;
-  scrollToPosition(pos: PdfPosition): void;
+  scrollToPosition(pos: PdfPosition, options?: {origin: string}): void;
   setAutoReload(enabled: boolean): void;
   reload(): void;
 }

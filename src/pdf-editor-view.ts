@@ -106,7 +106,11 @@ export class PdfEditorView {
     this.ready = false;
   }
 
-  scrollToPosition(pos: PdfPosition) {
+  scrollToPosition(pos: PdfPosition, options?: any) {
+    const payload = pos;
+    if (options && options.origin) {
+      payload.origin = options.origin;
+    }
     this.sendMessage("setposition", pos);
   }
 }
