@@ -4,7 +4,7 @@ export interface PdfPosition {
   pageIndex: number;
   pointX: number;
   pointY: number;
-  origin?: string
+  origin?: string;
 }
 
 export interface PdfPositionWithDimen extends PdfPosition {

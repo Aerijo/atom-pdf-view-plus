@@ -12,7 +12,7 @@ export class SynctexConsumer {
     this.destroyed = false;
 
     atom.commands.add("atom-text-editor", {
-      "pdf-view-plus:forward-sync": function (event) {
+      "pdf-view-plus:forward-sync": function(event) {
         const editor = atom.workspace.getActiveTextEditor();
         if (!editor) {
           return;
@@ -23,7 +23,9 @@ export class SynctexConsumer {
           return;
         }
 
-        const openPdfs = atom.workspace.getPaneItems().filter((p: any) => p.getPath && p.getPath().endsWith(".pdf"));
+        const openPdfs = atom.workspace
+          .getPaneItems()
+          .filter((p: any) => p.getPath && p.getPath().endsWith(".pdf"));
         if (openPdfs.length === 0) {
           return;
         }
@@ -31,18 +33,19 @@ export class SynctexConsumer {
         const pdf: any = openPdfs[0];
         const position = editor.getLastCursor().getBufferPosition();
 
-        const command = `synctex view -i ${position.row + 1}:${position.column + 1}:"${file}" -o "${pdf.getPath()}"`;
+        const command = `synctex view -i ${position.row + 1}:${position.column +
+          1}:"${file}" -o "${pdf.getPath()}"`;
         cp.exec(command, (err, stdout, stderr) => {
           if (err) {
-            console.warn(stderr)
+            console.warn(stderr);
             return;
           }
           const location = parseForwardSynctex(stdout);
           if (typeof pdf.scrollToPosition === "function") {
             pdf.scrollToPosition(location, {origin: "TL"});
-          };
+          }
         });
-      }
+      },
     });
   }
 
@@ -56,7 +59,7 @@ export class SynctexConsumer {
       pdfView.observePdfViews(editor => {
         editor.onDidClick(evt => {
           console.log(evt.position);
-        })
+        });
 
         editor.onDidDoubleClick(evt => {
           if (this.destroyed) {
@@ -80,11 +83,11 @@ export class SynctexConsumer {
 
             atom.workspace.open(location.source, {
               initialLine: location.row,
-              initialColumn: (location.column && location.column >= 0) ? location.column : 0,
+              initialColumn: location.column && location.column >= 0 ? location.column : 0,
               searchAllPanes: true,
             });
           });
-        })
+        });
       })
     );
   }
@@ -93,7 +96,7 @@ export class SynctexConsumer {
 function parseForwardSynctex(stdout: string): PdfPosition {
   const location: any = {};
   const lines = stdout.split(/\r?\n/g);
-  console.log(lines)
+  console.log(lines);
   for (const line of lines) {
     const match = line.match(/^(\w+):(.+)$/);
     if (!match) {
